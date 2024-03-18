@@ -1,6 +1,10 @@
 /**
  *
  */
+/**
+ * Represents a binary tree data structure.
+ * @class BinaryTree
+ */
 class BinaryTree {
   constructor() {
     this.root = null;
@@ -16,9 +20,8 @@ class BinaryTree {
   }
 
   add(data) {
-    if (this.contains(this.root, data)) return false;
+    if (this.contains(data)) return false;
 
-    console.log("hi");
     this.root = this._add(this.root, data);
     this._nodeCount++;
     return true;
@@ -26,45 +29,68 @@ class BinaryTree {
 
   _add(node, data) {
     if (node === null) {
-        return new Node(null, null, data);
+      return new Node(null, null, data);
     }
 
     if (data < node.data) {
-        node.left = this._add(node.left, data);
+      node.left = this._add(node.left, data);
     } else {
-        node.right = this._add(node.right, data);
+      node.right = this._add(node.right, data);
     }
 
     return node;
   }
 
-  contains(node, data) {
+  remove(data) {
+    if (!this.contains(this.root, data)) return false;
+
+    this.root = this.root && this.root.remove(data);
+    this._nodeCount--;
+    return true;
+  }
+
+  contains(data) {
+    return this._contains(this.root, data);
+  }
+
+  _contains(node, data) {
     if (node === null) return false;
 
     if (data < node.data) {
-        return this.contains(node.left, data);
+      return this._contains(node.left, data);
     } else if (data > node.data) {
-        return this.contains(node.right, data);
+      return this._contains(node.right, data);
     } else {
-        return true;
+      return true;
     }
   }
-
-  remove(data) {}
-
-  update(data) {}
-
-  search(data) {}
-
-  dfs() {}
-
-  bfs() {}
 }
 
 class Node {
-    constructor(left, right, data) {
-        this.data = data;
-        this.left = left;
-        this.right = right;
+  constructor(left, right, data) {
+    this.data = data;
+    this.left = left;
+    this.right = right;
+  }
+
+  remove(data) {
+    if (data < this.data) {
+      this.left = this.left && this.left.remove(data);
+    } else if (data > this.data) {
+      this.right = this.right && this.right.remove(data);
+    } else if (this.left && this.right) {
+      this.data = this._findMin(this.right);
+      this.right = this.right.remove(this.data);
+    } else {
+      return this.left || this.right;
     }
+    return this;
+  }
+
+  _findMin(node) {
+    while (node.left) {
+      node = node.left;
+    }
+    return node.data;
+  }
 }
